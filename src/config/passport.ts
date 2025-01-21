@@ -1,10 +1,11 @@
+import { first, isEmpty } from 'lodash';
 import { Strategy as JwtStrategy, ExtractJwt, VerifyCallback } from 'passport-jwt';
 
 import DB from '@/database';
 import Users from '@/model/Users';
-import UserRoles from '@/model/UserRoles';
 
 import { TokenTypes } from './tokens';
+import { ROLE } from './roles';
 
 const jwtOptions = {
   secretOrKey: 'SECRET',
@@ -23,9 +24,14 @@ const jwtVerify: VerifyCallback = async (payload, done) => {
       done(null, false);
     }
 
-    const role = await DB.getEntityManager().findOne(UserRoles, { user_id: user?.id })
+    const role = await DB.getEntityManager().getConnection().execute(`
+      SELECT UserRoles.id AS id, Roles.name AS name
+      FROM UserRoles
+      LEFT JOIN Roles ON Roles.id = UserRoles.role_id
+      WHERE user_id = ${user?.id};
+    `);
 
-    done(null, { ...user, role });
+    done(null, { ...user, role: !isEmpty(role) ? first(role)?.name : ROLE.user });
   } catch (error) {
     done(error, false);
   }

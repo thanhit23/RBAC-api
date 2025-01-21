@@ -6,9 +6,8 @@ class UserService {
   static async getUsers(): Promise<ResponseDefault<User[]>> {
     return await UserRepository.getUsers();
   }
-  static async deteteUser(id: number): Promise<ResponseDefault<User[]>> {
-    // handle check relationship
-    return await UserRepository.deleteUser(id);
+  static async deteteUser(id: number, user: any): Promise<ResponseDefault<User[]>> {
+    return await UserRepository.deleteUser(id, user);
   }
 }
 

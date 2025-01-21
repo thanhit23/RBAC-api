@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.get('/', validate(StoreValidation.getStores), StoreController.getStores);
 router.post('/', validate(StoreValidation.createStore), StoreController.createStore);
-router.patch('/:id', authenticate(ROLE.user), validate(StoreValidation.updateStore), StoreController.updateStore);
-router.delete('/:id', authenticate(ROLE.user), validate(StoreValidation.deleteStore), StoreController.deleteStore);
+router.patch('/:id', authenticate([ROLE.super]), validate(StoreValidation.updateStore), StoreController.updateStore);
+router.delete('/:id', authenticate([ROLE.super]), validate(StoreValidation.deleteStore), StoreController.deleteStore);
 
 export default router;

@@ -4,7 +4,6 @@ import { Request, Response } from 'express';
 
 import AuthenticationService from '@/service/authentication'
 import catchAsync from '@/utils/catchAsync';
-import ApiError from '@/utils/ApiError';
 
 class AuthenticationController {
   static register = catchAsync(async (req, res) => {
@@ -17,7 +16,9 @@ class AuthenticationController {
   })
   static async me(req: Request, res: Response): Promise<void> {
     if (!req?.user) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+      res.status(httpStatus.NOT_FOUND).json({
+        message: 'User not found'
+      })
     }
 
     res.status(httpStatus.OK).json({

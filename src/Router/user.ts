@@ -8,6 +8,6 @@ import { ROLE } from '@/config/roles';
 const router = express.Router();
 
 router.get('/', validate(UserValidation.getUsers), UserController.getUsers);
-router.delete('/:id', authenticate(ROLE.admin), validate(UserValidation.deleteUser), UserController.deleteUser);
+router.delete('/:id', authenticate([ROLE.super, ROLE.admin, ROLE.moderator]), validate(UserValidation.deleteUser), UserController.deleteUser);
 
 export default router;

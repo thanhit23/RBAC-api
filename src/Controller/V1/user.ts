@@ -10,7 +10,7 @@ class UserController {
   });
 
   static deleteUser = catchAsync(async (req, res) => {
-    const data = await UserService.deteteUser(Number(req.params.id))
+    const data = await UserService.deteteUser(Number(req.params.id), req.user)
     res.status(httpStatus.CREATED).json(data)
   });
 }
