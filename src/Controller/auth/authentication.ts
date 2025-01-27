@@ -3,11 +3,16 @@ import httpStatus from 'http-status-codes';
 import { Request, Response } from 'express';
 
 import AuthenticationService from '@/service/authentication'
+import AuthenticatioAdminnService from '@/service/admin/authentication'
 import catchAsync from '@/utils/catchAsync';
 
 class AuthenticationController {
   static register = catchAsync(async (req, res) => {
     const data = await AuthenticationService.register(req.body)
+    res.status(httpStatus.OK).json(data)
+  });
+  static registerAdmin = catchAsync(async (req, res) => {
+    const data = await AuthenticatioAdminnService.registerAdmin(req)
     res.status(httpStatus.OK).json(data)
   });
   static login = catchAsync(async (req, res) => {
