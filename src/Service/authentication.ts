@@ -3,14 +3,11 @@ import jwt from 'jsonwebtoken';
 
 import config from '@/config/config';
 import { TokenTypes } from '@/config/tokens';
-import RoleRepository from "@/repository/role";
 import User, { RegisterBody } from '@/model/Users';
 import AuthenticationRepository from "@/repository/authentication";
 
 class AuthenticationService {
   static async register(body: RegisterBody) {
-    await RoleRepository.validateRole(body?.roleId);
-
     return await AuthenticationRepository.register(body);
   }
   static async generateAuthTokens(user: User) {
