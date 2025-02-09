@@ -1,10 +1,10 @@
 import express from 'express';
 
+import { ROLE } from '@/config/roles';
 import validate from '@/middlewares/validate';
 import StoreValidation from '@/validations/store';
-import StoreController from '@/controller/v1/store';
 import authenticate from '@/middlewares/authenticate';
-import { ROLE } from '@/config/roles';
+import StoreController from '@/controller/v1/auth/store';
 
 const router = express.Router();
 

@@ -1,52 +1,31 @@
-import { omit } from 'lodash'
-import httpStatus from 'http-status-codes'
-
-import DB from '@/database'
-import ApiError from '@/utils/ApiError';
+import DB from '@/database';
 import Stores, { BodyUpdate } from "@/model/Stores";
-import { ResponseDefault } from '@/interfaces/response';
 
 class StoreRepository {
-  static async getStores(): Promise<ResponseDefault<Stores[]>> {
-    const store = await DB.getEntityManager().find(Stores, {}, { limit: 20 });
-    return { status: true, statusCode: httpStatus.OK, data: store, error: true, message: '' };
+  static async getStores(): Promise<Stores[]> {
+    return await DB.getEntityManager().find(Stores, {}, { limit: 20 });
   }
-  static async createStore(body: BodyUpdate): Promise<ResponseDefault> {  
-    await DB.getEntityManager().insert(Stores, body);
-
-    return { status: true, error: false, data: null, message: 'Create Successfully' };
+  static async createStore(body: BodyUpdate): Promise<Stores | null> {  
+    const id = await DB.getEntityManager().insert(Stores, body);
+    return await this.getStoreByOption({ id });
   }
-  static async validateStore(id: number): Promise<void> {
-    const user = await DB.getEntityManager().findOne(Stores, { id });
-
-    if (!user) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Store not found.');
-    }
+  static async getStoreByOption(option: Partial<Stores>): Promise<Stores | null> {  
+    return await DB.getEntityManager().findOne(Stores, option);
   }
-  static async updateStore(body: Required<BodyUpdate>): Promise<ResponseDefault> {
-    const em = DB.getEntityManager().fork();
-    const store = await em.findOne(Stores, { id: body.id });
-
-    if (!store) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Store not found.')
-    }
-
-    Object.assign(store, omit(body, ['id']));
-    await em.flush();
-
-    return { status: true, error: false, data: null, message: 'Update Successfully' }
+  static async getStoresByOption(option: Partial<Stores>): Promise<Stores[]> {  
+    return await DB.getEntityManager().find(Stores, option);
   }
-  static async deleteStore(id: number): Promise<ResponseDefault> {
-    const em = DB.getEntityManager().fork();
-    const store = await em.findOne(Stores, { id });
-
-    if (!store) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Store not found.')
-    }
-
-    await em.removeAndFlush(store);
-
-    return { status: true, error: false, data: null, message: 'Delete Successfully', }
+  static async updateStore(query: string, values: (string | number)[]): Promise<boolean> {
+    const response = await DB.getEntityManager().getConnection().execute(query, values);
+  
+    return !!response;
+  }
+  static async deleteStore(id: number): Promise<boolean> {
+    const response = await DB.getEntityManager().getConnection().execute(`
+      DELETE FROM Stores WHERE id = ?
+    `, [id]);
+    
+    return !!response;
   }
 }
 

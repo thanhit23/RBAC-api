@@ -1,5 +1,5 @@
 import express from 'express';
-import PermissionController from '@/controller/v1/permission';
+import PermissionController from '@/controller/v1/auth/permission';
 import validate from '@/middlewares/validate';
 import PermissionValidation from '@/validations/permission';
 

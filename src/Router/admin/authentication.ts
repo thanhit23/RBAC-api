@@ -1,9 +1,10 @@
 import express from 'express';
-import AuthenticationController from '@/controller/auth/authentication';
-import validate from '@/middlewares/validate';
-import AuthenticationValidation from '@/validations/authentication';
-import authenticate from '@/middlewares/authenticate';
+
 import { ROLE } from '@/config/roles';
+import validate from '@/middlewares/validate';
+import authenticate from '@/middlewares/authenticate';
+import AuthenticationValidation from '@/validations/authentication';
+import AuthenticationController from '@/controller/v1/auth/authentication';
 
 const router = express.Router();
 

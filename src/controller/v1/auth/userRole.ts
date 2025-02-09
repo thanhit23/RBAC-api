@@ -1,7 +1,7 @@
 import httpStatus from 'http-status-codes';
 
-import UserRoleService from '@/service/userRole'
 import catchAsync from '@/utils/catchAsync';
+import UserRoleService from '@/service/admin/userRole';
 
 class UserRoleController {
   static getUserRoles = catchAsync(async (_, res) => {

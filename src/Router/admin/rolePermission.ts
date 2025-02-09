@@ -1,7 +1,8 @@
 import express from 'express';
-import RolePermissionController from '@/controller/v1/rolePermission';
+
 import validate from '@/middlewares/validate';
 import RolePermissionValidation from '@/validations/rolePermission';
+import RolePermissionController from '@/controller/v1/auth/rolePermission';
 
 const router = express.Router();
 
