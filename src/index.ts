@@ -7,12 +7,6 @@ import httpStatus from 'http-status-codes';
 import express, { Express, NextFunction } from "express";
 
 import userRoutes from './router/user';
-import roleRoutes from './router/role';
-import storeRoutes from './router/store';
-import userRoleRoutes from './router/userRole';
-import permissionRoutes from './router/permission';
-import rolePermissionRoutes from './router/rolePermission';
-import authenticationRoutes from './router/authentication';
 import adminRoutes from './router/admin';
 
 import { Database } from "./database";
@@ -40,14 +34,8 @@ app.use(helmet());
 app.use(cors());
 app.options('*', cors());
 
-app.use('/v1/role', roleRoutes);
-app.use('/v1/users', userRoutes);
-app.use('/v1/store', storeRoutes);
-app.use('/v1/user-role', userRoleRoutes);
-app.use('/v1/auth', authenticationRoutes);
-app.use('/v1/permission', permissionRoutes);
+app.use('/v1', userRoutes);
 app.use('/v1/admin', adminRoutes);
-app.use('/v1/role-permission', rolePermissionRoutes);
 
 Database.initialize();
 

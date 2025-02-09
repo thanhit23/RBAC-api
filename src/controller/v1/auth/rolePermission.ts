@@ -1,7 +1,7 @@
 import httpStatus from 'http-status-codes';
 
 import catchAsync from '@/utils/catchAsync';
-import RolePermissionService from '@/service/rolePermission'
+import RolePermissionService from '@/service/admin/rolePermission'
 
 class RolePermissionController {
   static getRolePermissions = catchAsync(async (_, res) => {

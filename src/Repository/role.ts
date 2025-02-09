@@ -1,55 +1,34 @@
-import { omit } from 'lodash'
-import httpStatus from 'http-status-codes'
-
 import DB from '@/database'
-import ApiError from '@/utils/ApiError'
 import Roles, { BodyUpdate } from '@/model/Roles'
-import { ResponseDefault } from '@/interfaces/response'
 
 class RoleRepository {
-  static async getRoles(): Promise<ResponseDefault<Roles[]>> {
-    const permissions = await DB.getEntityManager().find(Roles, {}, { limit: 20 });
-    return { status: true, statusCode: httpStatus.OK, data: permissions, error: true, message: '' };
+  static async getRoles(): Promise<Roles[]> {
+    return await DB.getEntityManager().find(Roles, {}, { limit: 20 });
   }
-  static async validateRole(id: number): Promise<void> {
-    const user = await DB.getEntityManager().findOne(Roles, { id });
 
-    if (!user) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Role not found.');
-    }
+  static async getRoleByOption(option: Partial<Roles>): Promise<Roles | null> {
+    return await DB.getEntityManager().findOne(Roles, option);
   }
-  static async getRoleById(id: number): Promise<any> {
-    return await DB.getEntityManager().findOne(Roles, { id });
+
+  static async getRolesByOption(option: Partial<Roles>): Promise<Roles[]> {
+    return await DB.getEntityManager().find(Roles, option);
   }
-  static async createRole(body: BodyUpdate): Promise<ResponseDefault> {  
-    await DB.getEntityManager().insert(Roles, body);
+  static async createRole(body: BodyUpdate): Promise<Roles | null> {  
+    const id = await DB.getEntityManager().insert(Roles, body);
 
-    return { status: true, error: false, data: null, message: 'Create Successfully' };
+    return await this.getRoleByOption({ id });
   }
-  static async updateRole(body: Required<BodyUpdate>): Promise<ResponseDefault> {
-    const em = DB.getEntityManager().fork();
-    const permissions = await em.findOne(Roles, { id: body.id });
+  static async updateRole(query: string, values: (string | number)[]): Promise<boolean> {
+    const response = await DB.getEntityManager().getConnection().execute(query, values);
 
-    if (!permissions) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Role Permissions not found.')
-    }
-
-    Object.assign(permissions, omit(body, ['id']));
-    await em.flush();
-
-    return { status: true, error: false, data: null, message: 'Update Successfully' }
+    return !!response;
   }
-  static async deleteRole(id: number): Promise<ResponseDefault> {
-    const em = DB.getEntityManager().fork();
-    const permissions = await em.findOne(Roles, { id });
-
-    if (!permissions) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Role Permissions not found.')
-    }
-
-    await em.removeAndFlush(permissions);
-
-    return { status: true, error: false, data: null, message: 'Delete Successfully', }
+  static async deleteRole(id: number): Promise<boolean> {
+    const response = await DB.getEntityManager().getConnection().execute(`
+      DELETE FROM Roles WHERE id = ?
+    `, [id]);
+    
+    return !!response;
   }
 }
 

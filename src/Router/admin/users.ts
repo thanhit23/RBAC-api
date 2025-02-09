@@ -1,5 +1,5 @@
 import express from 'express';
-import UserController from '@/controller/v1/user';
+import UserController from '@/controller/v1/auth/user';
 import validate from '@/middlewares/validate';
 import UserValidation from '@/validations/user';
 import authenticate from '@/middlewares/authenticate';

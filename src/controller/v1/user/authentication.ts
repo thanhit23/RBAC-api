@@ -2,7 +2,7 @@ import { omit } from 'lodash';
 import httpStatus from 'http-status-codes';
 import { Request, Response } from 'express';
 
-import AuthenticationService from '@/service/authentication'
+import AuthenticationService from '@/service/user/authentication'
 import AuthenticatioAdminnService from '@/service/admin/authentication'
 import catchAsync from '@/utils/catchAsync';
 

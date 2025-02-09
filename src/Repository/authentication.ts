@@ -2,14 +2,13 @@ import bcrypt from 'bcrypt';
 import httpStatus from 'http-status-codes';
 
 import DB from '@/database'
-import Users from '@/model/Users'
 import UserRole from '@/model/UserRoles'
 import ApiError from '@/utils/ApiError';
-import { RegisterBody, LoginBody } from '@/model/Users'
+import Users, { RegisterBody, LoginBody } from '@/model/Users'
 
 import RoleRepository from './role';
 
-class UserRepository {
+class AuthRepository {
   static async register(body: RegisterBody) {
     const users = await DB.getEntityManager().find(Users, { email: body.email })
     const password = bcrypt.hashSync(body.password, 10);
@@ -24,10 +23,10 @@ class UserRepository {
       password,
     })
 
-    const role = await RoleRepository.getRoleById(body?.roleId);
+    const role = await RoleRepository.getRoleByOption({ id: body?.roleId });
 
     await DB.getEntityManager().insert(UserRole, {
-      role_id: role.id,
+      role_id: role!.id,
       user_id: userId,
     });
 
@@ -50,4 +49,4 @@ class UserRepository {
   }
 }
 
-export default UserRepository;
+export default AuthRepository;

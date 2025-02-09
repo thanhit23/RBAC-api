@@ -1,7 +1,7 @@
 import httpStatus from 'http-status-codes';
 
-import UserService from '@/service/user'
 import catchAsync from '@/utils/catchAsync';
+import UserService from '@/service/admin/user';
 
 class UserController {
   static getUsers = catchAsync(async (_, res) => {

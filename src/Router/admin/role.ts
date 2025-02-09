@@ -2,7 +2,7 @@ import express from 'express';
 
 import validate from '@/middlewares/validate';
 import RoleValidation from '@/validations/role';
-import RoleController from '@/controller/v1/role';
+import RoleController from '@/controller/v1/auth/role';
 
 const router = express.Router();
 

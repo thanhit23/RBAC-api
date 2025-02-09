@@ -1,6 +1,6 @@
 import httpStatus from 'http-status-codes';
 
-import RoleService from '@/service/role'
+import RoleService from '@/service/admin/role'
 import catchAsync from '@/utils/catchAsync';
 
 class RoleController {

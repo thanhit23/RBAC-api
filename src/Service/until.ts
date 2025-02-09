@@ -1,15 +1,20 @@
 import dayjs from 'dayjs';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+import User from '@/model/Users';
 import config from '@/config/config';
 import { TokenTypes } from '@/config/tokens';
-import User, { RegisterBody } from '@/model/Users';
-import AuthenticationRepository from "@/repository/authentication";
 
-class AuthenticationService {
-  static async register(body: RegisterBody) {
-    return await AuthenticationRepository.register(body);
+class UntilService {
+  static async hashPassword(passwordString: string) {
+    return bcrypt.hashSync(passwordString, 10);
   }
+
+  static async comparePassword(passwordString: string, password: string) {
+    return bcrypt.compareSync(passwordString, password)
+  }
+
   static async generateAuthTokens(user: User) {
     const accessTokenExpires = dayjs().add(config.jwt.accessExpirationMinutes, 'minutes');
     const accessToken = this.generateToken(user.id, accessTokenExpires, TokenTypes.ACCESS);
@@ -28,6 +33,7 @@ class AuthenticationService {
       },
     };
   };
+
   static generateToken(userId: string | number, expires: dayjs.Dayjs, type: keyof typeof TokenTypes, secret = 'SECRET') {
     const payload = {
       sub: userId,
@@ -37,13 +43,6 @@ class AuthenticationService {
     };
     return jwt.sign(payload, secret);
   };
-  static async login(body: RegisterBody) {
-    const responsive = await AuthenticationRepository.login(body);
-
-    const token = await this.generateAuthTokens(responsive.data);
-
-    return { ...responsive, data: token }
-  }
 }
 
-export default AuthenticationService;
+export default UntilService;

@@ -1,7 +1,7 @@
 import httpStatus from 'http-status-codes';
 
 import Users from "@/model/Users";
-import StoreService from '@/service/store';
+import StoreService from '@/service/admin/store';
 import catchAsync from '@/utils/catchAsync';
 
 class StoreController {
