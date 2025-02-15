@@ -1,6 +1,9 @@
-import { isEmpty } from 'lodash';
+import { isEmpty, omit } from 'lodash';
+import httpStatus from 'http-status-codes';
 
 import DB from '@/database';
+import ApiError from '@/utils/ApiError';
+import UserRoleRepository from './userRole';
 import Users, { RegisterBody } from '@/model/Users';
 
 type UserRow = Users & {
@@ -16,11 +19,30 @@ class UserRepository {
     return !isEmpty(users);
   }
   static async createUser(body: RegisterBody): Promise<Users> {
-    const userId = await DB.getEntityManager().insert(Users, body);
-    const user = await DB.getEntityManager().findOne(Users, { id: userId })
-    return user!;
-  }
+    const transaction = DB.getEntityManager();
 
+    try {
+      await transaction.begin();
+      const userId = await DB.getEntityManager().insert(Users, omit(body, ['roleId']));
+
+      const user = await DB.getEntityManager().findOne(Users, { id: userId })
+  
+      await UserRoleRepository.createUserRole({
+        role_id: body!.roleId,
+        user_id: user!.id,
+      })
+  
+      await transaction.commit();
+
+      return user!;
+    } catch (err: { statusCode: number; message: string } | any) {
+      await transaction.rollback();
+
+      console.log(err);
+
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error');
+    }
+  }
   static async getUsers(): Promise<Users[]> {
     const usersWithRoles = await DB.getEntityManager().getConnection().execute(`
       SELECT
@@ -60,14 +82,26 @@ class UserRepository {
     return await DB.getEntityManager().findOne(Users, option);
   }
   static async deleteUser(id: number): Promise<boolean> {
+    const transaction = DB.getEntityManager();
+    
     try {
+      await transaction.begin();
+
+      const query = `DELETE FROM UserRoles WHERE user_id = ?`;
+    
+      await UserRoleRepository.executeUserRoleQuery(query, [id]);
+      
       const response = await DB.getEntityManager().getConnection().execute(`
         DELETE FROM Users WHERE id = ?
       `, [id]);
+
+      await transaction.commit();
       
       return !!response;
     } catch (error) {
-      console.log('response', error);
+      await transaction.rollback();
+
+      console.log('error', error);
       return false;
     }
   }

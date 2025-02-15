@@ -18,7 +18,25 @@ class RoleRepository {
 
     return await this.getRoleByOption({ id });
   }
-  static async updateRole(query: string, values: (string | number)[]): Promise<boolean> {
+  static async updateRole(body: Required<BodyUpdate>): Promise<boolean> {
+
+    const values: (string | number)[] = [];
+    const updateFields: (string | number)[] = [];
+
+    if (body.name) {
+      updateFields.push('name = ?');
+      values.push(body.name);
+    }
+
+    if (body.description) {
+      updateFields.push('description = ?');
+      values.push(body.description);
+    }
+
+    values.push(body.id);
+
+    const query = `UPDATE Roles SET ${updateFields.join(', ')} WHERE id = ?`;
+    
     const response = await DB.getEntityManager().getConnection().execute(query, values);
 
     return !!response;

@@ -29,29 +29,7 @@ class StoreService {
       throw new ApiError(httpStatus.BAD_REQUEST, 'User not owner')
     }
 
-    const values: (string | number)[] = [];
-    const updateFields: (string | number)[] = [];
-
-    if (body.name) {
-      updateFields.push('name = ?');
-      values.push(body.name);
-    }
-
-    if (body.address) {
-      updateFields.push('address = ?');
-      values.push(body.address);
-    }
-
-    if (body.owner_id) {
-      updateFields.push('owner_id = ?');
-      values.push(body.owner_id);
-    }
-
-    values.push(body.id);
-
-    const query = `UPDATE Stores SET ${updateFields.join(', ')} WHERE id = ?`;
-
-    const isUpdated = await StoreRepository.updateStore(query, values);
+    const isUpdated = await StoreRepository.updateStore(body);
 
     if (!isUpdated) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Update Failled')

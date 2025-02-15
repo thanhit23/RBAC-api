@@ -20,7 +20,28 @@ class UserRoleRepository {
 
     return this.getUserRole({ id: userRole });
   }
-  static async updateUserRole(query: string, values: (string | number)[]): Promise<boolean> {
+  static async updateUserRole(body: Required<Body>): Promise<boolean> {
+    const values: (string | number)[] = [];
+    const updateFields: (string | number)[] = [];
+
+    const query = `UPDATE Roles SET ${updateFields.join(', ')} WHERE id = ?`;
+
+    if (body?.user_id) {
+      updateFields.push('user_id = ?');
+      values.push(body.user_id);
+    }
+
+    if (body?.role_id) {
+      updateFields.push('role_id = ?');
+      values.push(body.role_id);
+    }
+
+    if (body?.store_id) {
+      updateFields.push('store_id = ?');
+      values.push(body.store_id);
+    }
+
+    values.push(body?.id);
 
     const response = await DB.getEntityManager().getConnection().execute(query, values);
     

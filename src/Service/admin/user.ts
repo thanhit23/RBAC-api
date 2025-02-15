@@ -52,14 +52,6 @@ class UserService {
       throw new ApiError(httpStatus.BAD_REQUEST, 'You cannot delete a Moderator.');
     }
 
-    const query =`DELETE FROM UserRoles WHERE user_id = ?`;
-    
-    const isDeletedUserRole = await UserRoleRepository.executeUserRoleQuery(query, [userRoleEntity.user_id]);
-    
-    if (!isDeletedUserRole) {
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Delete failed.');
-    }
-
     const isDeleted = await UserRepository.deleteUser(userRoleEntity.user_id);
     
     if (!isDeleted) {

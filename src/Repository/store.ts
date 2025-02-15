@@ -15,7 +15,30 @@ class StoreRepository {
   static async getStoresByOption(option: Partial<Stores>): Promise<Stores[]> {  
     return await DB.getEntityManager().find(Stores, option);
   }
-  static async updateStore(query: string, values: (string | number)[]): Promise<boolean> {
+  static async updateStore(body: Required<BodyUpdate>): Promise<boolean> {
+
+    const values: (string | number)[] = [];
+    const updateFields: (string | number)[] = [];
+
+    if (body.name) {
+      updateFields.push('name = ?');
+      values.push(body.name);
+    }
+
+    if (body.address) {
+      updateFields.push('address = ?');
+      values.push(body.address);
+    }
+
+    if (body.owner_id) {
+      updateFields.push('owner_id = ?');
+      values.push(body.owner_id);
+    }
+
+    values.push(body.id);
+
+    const query = `UPDATE Stores SET ${updateFields.join(', ')} WHERE id = ?`;
+    
     const response = await DB.getEntityManager().getConnection().execute(query, values);
   
     return !!response;
