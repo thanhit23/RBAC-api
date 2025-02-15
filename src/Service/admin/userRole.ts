@@ -41,20 +41,12 @@ class UserRoleService {
     return { status: true, error: false, data, message: 'Create Successfully' };
   }
   static async updateUserRole(body: Required<Body>): Promise<any> {
-    const values: (string | number)[] = [];
-    const updateFields: (string | number)[] = [];
-
-    const query = `UPDATE Roles SET ${updateFields.join(', ')} WHERE id = ?`;
-
     if (body?.user_id) {
       const user = await UserRepository.getUserByOption({ id: body.user_id });
 
       if (!user) {
         throw new ApiError(httpStatus.NOT_FOUND, 'User not found.');
       }
-
-      updateFields.push('user_id = ?');
-      values.push(body.user_id);
     }
 
     if (body?.role_id) {
@@ -63,9 +55,6 @@ class UserRoleService {
       if (!role) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Role not found.');
       }
-
-      updateFields.push('role_id = ?');
-      values.push(body.role_id);
     }
 
     if (body?.store_id) {
@@ -74,14 +63,9 @@ class UserRoleService {
       if (!store) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Store not found.');
       }
-
-      updateFields.push('store_id = ?');
-      values.push(body.store_id);
     }
 
-    values.push(body?.id);
-
-    return await UserRoleRepository.updateUserRole(query, values);
+    return await UserRoleRepository.updateUserRole(body);
   }
   static async deleteUserRole(id: number): Promise<any> {
     const userRole = await UserRoleRepository.getUserRoleByOption({ id });

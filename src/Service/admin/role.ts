@@ -28,24 +28,7 @@ class RoleService {
       throw new ApiError(httpStatus.NOT_FOUND, 'Role not found.')
     }
 
-    const values: (string | number)[] = [];
-    const updateFields: (string | number)[] = [];
-
-    if (body.name) {
-      updateFields.push('name = ?');
-      values.push(body.name);
-    }
-
-    if (body.description) {
-      updateFields.push('description = ?');
-      values.push(body.description);
-    }
-
-    values.push(body.id);
-
-    const query = `UPDATE Roles SET ${updateFields.join(', ')} WHERE id = ?`;
-
-    const isUpdated = await RoleRepository.updateRole(query, values);
+    const isUpdated = await RoleRepository.updateRole(body);
 
     if (!isUpdated) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Update Failled')

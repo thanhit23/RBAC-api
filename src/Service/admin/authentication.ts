@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { first, omit } from 'lodash';
+import { first } from 'lodash';
 import httpStatus from 'http-status-codes';
 
 import Users from '@/model/Users';
@@ -38,16 +38,9 @@ class AuthenticationService {
 
     const password = await UntilService.hashPassword(req.body.password);
 
-    const userInsert = await UserRepository.createUser(omit({...req.body, password}, ['roleId']));
+    const userInsert = await UserRepository.createUser({...req.body, password, roleId: role!.id });
 
-    const roleInsert = await RoleRepository.getRoleByOption({ id: req.body.roleId });
-
-    await UserRoleRepository.createUserRole({
-      role_id: roleInsert!.id,
-      user_id: userInsert.id,
-    })
-
-    return { status: true, error: false, data: true, message: 'Create Successfully' };
+    return { status: true, error: false, data: userInsert, message: 'Create Successfully' };
   }
 }
 
